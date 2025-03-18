@@ -1,67 +1,69 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import Navbar from "../components/navbar";
 
-const API_URL =
-    "https://v2k-dev.vallarismaps.com/core/api/features/1.1/collections/658cd4f88a4811f10a47cea7/items?api_key=bLNytlxTHZINWGt1GIRQBUaIlqz9X45XykLD83UkzIoN6PFgqbH7M7EDbsdgKVwC";
-
-function MapComponent() {
-    const mapContainerRef = useRef(null);
-    const mapRef = useRef(null);
-    const [features, setFeatures] = useState([]);
+function App() {
+    const [map, setMap] = useState(null);
+    const [data, setData] = useState([]);
+    const [apiUrl, setApiUrl] = useState(" ");
+    const [inputApiUrl, setInputApiUrl] = useState(apiUrl);
 
     useEffect(() => {
-        if (!mapContainerRef.current) return;
+        
+        fetch(apiUrl)
+            .then((res) => res.json())
+            .then((result) => {
+                setData(result.features);
+            });
 
         // สร้างแผนที่
-        const map = new maplibregl.Map({
-            container: mapContainerRef.current,
-            style:
-                "https://api.maptiler.com/maps/streets-v2/style.json?key=pyQd39Pg2Gmdrjguc7bM",
-            center: [100.20222, 15.22218],
-            zoom: 5.7,
+        const mapInstance = new maplibregl.Map({
+            container: "map",
+            style: "https://api.maptiler.com/maps/basic-v2/style.json?key=pyQd39Pg2Gmdrjguc7bM", 
+            center: [100.523186, 13.736717], 
+            zoom: 6,
         });
 
-        mapRef.current = map;
+        setMap(mapInstance);
 
-        // ดึงข้อมูลจาก API
-        fetch(API_URL)
-            .then((response) => response.json())
-            .then((data) => {
-                console.log("Fetched Data:", data);
-                if (data && data.features) {
-                    setFeatures(data.features);
-                }
-            })
-            .catch((error) => console.error("Error fetching data:", error));
-
-        return () => map.remove();
-    }, []);
+        return () => mapInstance.remove(); 
+    }, [apiUrl]);
 
     useEffect(() => {
-        if (!mapRef.current || features.length === 0) return;
+        if (map && data.length > 0) {
+            data.forEach((feature) => {
+                const [lon, lat] = feature.geometry.coordinates;
+                new maplibregl.Marker().setLngLat([lon, lat]).addTo(map);
+            });
+        }
+    }, [map, data]);
 
-        // วาด Marker ลงบนแผนที่
-        features.forEach((feature) => {
-            const coordinates = feature.geometry.coordinates; // [lng, lat]
-            new maplibregl.Marker()
-                .setLngLat(coordinates)
-                .setPopup(new maplibregl.Popup().setText(feature.properties.name || "No Name")) // เพิ่ม popup แสดงชื่อ
-                .addTo(mapRef.current);
-        });
-    }, [features]);
+    const handleApiUrlChange = (e) => {
+        setInputApiUrl(e.target.value);
+    };
 
-    return <div ref={mapContainerRef} className="map-container" style={{ width: "100%", height: "100vh" }} />;
-}
+    const handleApiUrlSubmit = (e) => {
+        e.preventDefault();
+        setApiUrl(inputApiUrl);
+    };
 
-function MapPage() {
     return (
-        <div className="web-map">
-
-            <MapComponent />
+        <div style={{ width: "100vw", height: "100vh", display: "flex", flexDirection: "column" }}>
+            <Navbar />
+            <form onSubmit={handleApiUrlSubmit} style={{ padding: "10px", backgroundColor: "#fff", zIndex: 1 }}>
+                <input
+                    type="text"
+                    value={inputApiUrl}
+                    onChange={handleApiUrlChange}
+                    placeholder="Enter API URL"
+                    style={{ width: "70%", padding: "5px" }}
+                />
+                <button type="submit" style={{ padding: "5px 10px", marginLeft: "10px" }}>Load Data</button>
+            </form>
+            <div id="map" style={{ flexGrow: 1 }} />
         </div>
     );
 }
 
-export default MapPage;
+export default App;

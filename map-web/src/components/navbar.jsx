@@ -3,10 +3,10 @@ import '../App.css';
 
 function Navbar() {
     return (
-        <div className='navbar'>
-            <h1>Map</h1>
+        <div className="navbar">
+            <h2 className="navbar-title">Map</h2>
         </div>
-    )
+    );
 }
 
-export default Navbar
+export default Navbar;

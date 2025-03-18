@@ -6,6 +6,33 @@
   
 }
 
+/* สไตล์ navbar */
+.navbar {
+    background-color: #007BFF; 
+    color: white; 
+    padding: 15px 20px; 
+    display: flex;
+    justify-content: center;
+    align-items: center;  
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); 
+    font-family: 'Arial', sans-serif;
+}
+
+.navbar-title {
+    font-size: 24px; 
+    font-weight: bold; 
+    text-transform: uppercase; 
+    letter-spacing: 2px; 
+    margin: 0; 
+}
+
+.navbar:hover {
+    background-color: #0056b3; 
+    cursor: pointer; 
+    transition: background-color 0.3s ease; 
+}
+
+
 .welcome {
   margin: 0 auto;
   padding: 2rem;
