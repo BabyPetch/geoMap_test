@@ -25,6 +25,7 @@ function App() {
             zoom: 6,
         });
 
+        mapInstance.addControl(new maplibregl.NavigationControl(), "top-left");
         setMap(mapInstance);
 
         return () => mapInstance.remove(); 
