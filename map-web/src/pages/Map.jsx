@@ -17,7 +17,7 @@ function App() {
                 setData(result.features);
             });
 
-        // สร้างแผนที่
+        
         const mapInstance = new maplibregl.Map({
             container: "map",
             style: "https://api.maptiler.com/maps/basic-v2/style.json?key=pyQd39Pg2Gmdrjguc7bM", 
