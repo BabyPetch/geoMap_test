@@ -60,7 +60,7 @@ function App() {
                     placeholder="Enter API URL"
                     style={{ width: "70%", padding: "5px" }}
                 />
-                <button type="submit" style={{ padding: "5px 10px", marginLeft: "10px" }}>Load Api</button>
+                <button type="submit" style={{ padding: "5px 10px", marginLeft: "10px" }}>Load API</button>
             </form>
             <div id="map" style={{ flexGrow: 1 }} />
         </div>
