@@ -3,7 +3,7 @@ import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import Navbar from "../components/navbar";
 
-function App() {
+function map() {
     const [map, setMap] = useState(null);
     const [data, setData] = useState([]);
     const [apiUrl, setApiUrl] = useState(" ");
@@ -67,4 +67,5 @@ function App() {
     );
 }
 
-export default App;
+export default map;
+
