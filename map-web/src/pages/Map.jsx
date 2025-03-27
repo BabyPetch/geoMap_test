@@ -3,34 +3,54 @@ import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import Navbar from "../components/navbar";
 
-function map() {
+function Map() {
     const [map, setMap] = useState(null);
     const [data, setData] = useState([]);
-    const [apiUrl, setApiUrl] = useState(" ");
-    const [inputApiUrl, setInputApiUrl] = useState(apiUrl);
+    const [apiUrl, setApiUrl] = useState("");
+    const [inputApiUrl, setInputApiUrl] = useState("");
+
 
     useEffect(() => {
-        
-        fetch(apiUrl)
-            .then((res) => res.json())
-            .then((result) => {
-                setData(result.features);
-            });
-
-        
         const mapInstance = new maplibregl.Map({
             container: "map",
-            style: "https://api.maptiler.com/maps/basic-v2/style.json?key=pyQd39Pg2Gmdrjguc7bM", 
-            center: [100.523186, 13.736717], 
+            style: "https://api.maptiler.com/maps/basic-v2/style.json?key=pyQd39Pg2Gmdrjguc7bM",
+            center: [100.523186, 13.736717],
             zoom: 6,
         });
 
         mapInstance.addControl(new maplibregl.NavigationControl(), "top-left");
         setMap(mapInstance);
 
-        return () => mapInstance.remove(); 
-    }, [apiUrl]);
+        return () => mapInstance.remove();
+    }, []);
 
+    useEffect(() => {
+        if (!apiUrl.trim()) return;
+        fetch(apiUrl)
+            .then((res) => {
+                if (!res.ok) {
+                    alert(`Error: HTTP Status ${res.status}`);
+                    return null;
+                }
+                return res.json();
+            })
+            .then((result) => {
+                if (!result || !result.features) {
+                    alert("Invalid data format: Missing 'features' array.");
+                    setData([]);
+                    return; 
+                }
+                setData(result.features);
+            })
+            .catch((error) => {
+                console.error("Error loading data:", error);
+                alert(`Error loading data: ${error.message}`);
+                setData([]);
+            });
+    }, [apiUrl]);
+    
+
+    
     useEffect(() => {
         if (map && data.length > 0) {
             data.forEach((feature) => {
@@ -40,13 +60,12 @@ function map() {
         }
     }, [map, data]);
 
-    const handleApiUrlChange = (e) => {
-        setInputApiUrl(e.target.value);
-    };
+    const handleApiUrlChange = (e) => setInputApiUrl(e.target.value);
 
     const handleApiUrlSubmit = (e) => {
         e.preventDefault();
-        setApiUrl(inputApiUrl);
+        if (inputApiUrl.trim()) setApiUrl(inputApiUrl);
+        else alert("Please enter a valid API URL.");
     };
 
     return (
@@ -67,5 +86,4 @@ function map() {
     );
 }
 
-export default map;
-
+export default Map;
